@@ -283,19 +283,20 @@ BEGIN {
 		groupselect=1			# We have to select users in this groupname
 		groupfound=0
 		# Get the list of group names
-		while ("getent group" | getline ) {
-			split($0,b,":")         # Split group line into fields
-			group[b[3]] = b[1]      # Group name b[1] of this GID (b[3])
-			if (groupname == b[1]) groupfound=1
+		while ("getent group "groupname | getline ) {
+			split($0,b,":")					# Split group line into fields
+			group[b[3]] = b[1]				# Group name b[1] of this GID (b[3])
+			if (groupname == b[1]) {
+				groupfound=1
+				split(b[4],c,",")			# Split group members into array
+				for (x in c) {
+					gidname[c[x]] = group[b[3]]	# Assign GID to username
+				}
+			}
 		}
 		if (groupfound != 1) {
 			print RED "ERROR: No such groupname:" NORMAL, groupname
 			exit 1
-		}
-		# Get the list of user full names from passwd lines
-		while ("getent passwd" | getline ) {
-			split($0,b,":")         # Split password line into fields
-			gidname[b[1]] = group[b[4]]   # Group name of this GID (numeric group id)
 		}
 	}
 
