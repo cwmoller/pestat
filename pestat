@@ -239,9 +239,8 @@ BEGIN {
 		split($1, a, ".")
         }
 	close(PBSVERSION)
-	if ( a[1] >= pbsmajor && a[2] >= pbsminor ) {
-		recentpbs = 1
-	} else {
+	recentpbs = 1
+	if (( a[1] < pbsmajor ) || ((a[1] == pbsmajor) && (a[2] < pbsminor))) {
 		recentpbs = 0
 	}
 
