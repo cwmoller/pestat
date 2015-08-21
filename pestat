@@ -48,12 +48,17 @@ fi
 # Minimum age of NETLOADFILE (seconds): If less than this value the netload information may not be reliable:
 NETLOADFILE_MINAGE=10
 
+# Print usernames of jobs too?
+PRINTUSER=0
+
+
 # Command usage:
 function usage()
 {
 cat <<EOF
-Usage: $0 [-f] [-c|-n] [-d] [-V] [-u username|-g groupname] [-j jobs] [-C] [-h]
+Usage: $0 [-a] [-f] [-c|-n] [-d] [-V] [-u username|-g groupname] [-j jobs] [-C] [-h]
 where:
+	-a: Print owner usernames of jobs too
 	-f: Listing only nodes that are flagged by \*
 	-d: Listing also nodes that are down
 	-c/-n: Color/no color output
@@ -125,8 +130,11 @@ fi
 # Process command arguments
 #
 listflagged=0
-while getopts "fdcnVu:g:j:Ch" options; do
+while getopts "afdcnVu:g:j:Ch" options; do
 	case $options in
+		a ) 	PRINTUSER=1
+			# Printing owner of each job
+			;;
 		f ) 	listflagged=1
 			echo Listing only nodes that are flagged by \*
 			;;
@@ -215,7 +223,7 @@ fi
 $PBSNODES -a | $AWK -v listflagged=$listflagged -v listdownnodes=$listdownnodes \
 	-v colors=$colors -v username=$username -v groupname=$groupname -v minjobs=$minjobs \
 	-v NODENAMEFORMAT=$NODENAMEFORMAT \
-	-v QSTAT=$QSTAT -v PBSCONFIG=$PBSCONFIG \
+	-v QSTAT=$QSTAT -v PBSCONFIG=$PBSCONFIG -v PRINTUSER=$PRINTUSER \
 	-v netloadprint=$netloadprint -v NETLOADFILE=$NETLOADFILE -v NETLOADWRITE=$NETLOADWRITE \
 	-v netloadage=$netloadage -v NETLOADTHRES=$NETLOADTHRES -v NETLOADSCALE=$NETLOADSCALE '
 BEGIN {
@@ -375,8 +383,12 @@ NF==1 {	node=$1				# 1st line is nodename
 							listnode++
 						} else
 							usercolor=NORMAL
-						# Append jobid and username to the job list
-						jobiduserlist[node] = jobiduserlist[node] " " usercolor jobid " " user NORMAL
+						if (PRINTUSER)
+							# Append jobid and username to the job list
+							jobiduserlist[node] = jobiduserlist[node] " " usercolor jobid " " user NORMAL
+						else
+							# Append only jobid to the job list
+							jobiduserlist[node] = jobiduserlist[node] " " usercolor jobid NORMAL
 						jobidlist[node] = jobidlist[node] " " jobid
 						# If this node is used by the selected user
 						if (userselect==1 && user == username) userusesnode=1
