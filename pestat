@@ -236,6 +236,7 @@ BEGIN {
 		RED="\033[1;31m"
 		GREEN="\033[1;32m"
 		NORMAL="\033[0m"
+		DARK="\033[0;37m"
 
 		# Build associative array of queue colours
 		split(QUEUES,q1," ")
@@ -402,7 +403,7 @@ NF==1 {	node=$1				# 1st line is nodename
 						}
 						if (PRINTUSER)
 							# Append jobid and username to the job list
-							jobiduserlist[node] = jobiduserlist[node] " " usercolor jobid " " user NORMAL
+							jobiduserlist[node] = jobiduserlist[node] " " usercolor jobid " " DARK user NORMAL
 						else
 							# Append only jobid to the job list
 							jobiduserlist[node] = jobiduserlist[node] " " usercolor jobid NORMAL
