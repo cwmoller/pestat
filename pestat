@@ -379,7 +379,8 @@ NF==1 {	node=$1				# 1st line is nodename
 						# Case where the node pbs_mom has a (dead job) jobid unknown to pbs_server:
 						if (length(user) == 0) {	# Flag non-existent username
 							user="NONE*"
-							usercolor=RED
+							if (jobid == tjobid)	# Array jobs take a while to show up, rather not mark as error
+								usercolor=RED
 							listnode++
 						} else
 							usercolor=NORMAL
