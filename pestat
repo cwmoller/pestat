@@ -271,7 +271,7 @@ BEGIN {
 		userselect=1			# We select only this username
 		userfound=0
 		# Get the list of user full names from passwd lines
-		while ("getent passwd" | getline ) {
+		while ("getent passwd "username | getline ) {
 			split($0,b,":")         # Split password line into fields
 			if (username == b[1]) userfound=1
 		}
