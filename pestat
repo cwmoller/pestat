@@ -241,10 +241,13 @@ BEGIN {
 		# Build associative array of queue colours
 		split(QUEUES,q1," ")
 		split(COLOURS,q2," ")
-		if (length(q1) == length(q2)) {
+		if ((length(q1) > 0) && (length(q1) == length(q2))) {
+			printf "Queues: "
 			for (i = 0; i < length(q1); i++) {
 				QUEUECOLOUR[q1[i]] = q2[i]
+				printf q2[i] q1[i] " "
 			}
+			print NORMAL
 		}
 	}
 	# Conversion factor of netload (bytes) to Mbit/sec
