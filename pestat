@@ -157,6 +157,7 @@ BEGIN {
 		# See http://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 		RED="\033[1;31m"
 		GREEN="\033[1;32m"
+		BLUE="\033[1;34m"
 		NORMAL="\033[0m"
 		DARK="\033[0;37m"
 
@@ -297,6 +298,9 @@ NF==1 {	node=$1				# 1st line is nodename
 				if (groupselect==1 && gidname[user] == groupname) groupusesnode=1
 			}
 		}
+		else if ($1 == "resources_available.pwr_mgt_power_state") {
+			if ($3 == "powered-off") state[node] = "pwrdn"
+		}
 		getline			# Get the next input line
 	}
 
@@ -321,6 +325,10 @@ NF==1 {	node=$1				# 1st line is nodename
 		statecolor=RED
 		jobcolor=NORMAL
 		listnode++
+	} else if (state[node] == "pwrdn") {
+		stateflag=""
+		statecolor=BLUE
+		jobcolor=NORMAL
 	} else {
 		stateflag=" "
 		statecolor=GREEN
@@ -346,7 +354,7 @@ NF==1 {	node=$1				# 1st line is nodename
 	# Print a 1-line list for this node
 	if (!listflagged || listnode > 0) {
 		printf (NODENAMEFORMAT, node)
-		printf (" %s%s%1s%s", statecolor, state[node], stateflag, NORMAL)
+		printf (" %s%s%s%s", statecolor, state[node], stateflag, NORMAL)
 		printf (" %s%4d%s", cpucolor, ncpus[node], NORMAL)
 		printf (" %s%4d%1s%s", jobcolor, numtasks[node], jobflag, NORMAL)
 		printf (" %4dG%s", totmem[node]/1024/1024, NORMAL)
